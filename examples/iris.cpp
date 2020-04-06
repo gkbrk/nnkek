@@ -58,18 +58,18 @@ int main(void) {
 
   Util::shuffle(samples, samples.size());
 
-  Layer::Dense<double, 4, 20> layer1;
-  Layer::Dense<double, 20, 3> layer2;
+  Layer::Dense<double, 4, 50> layer1;
+  Layer::Dense<double, 50, 3> layer2;
 
   double score = fitness(layer1, layer2);
 
-  for (size_t i = 0; i < 50000; i++) {
+  for (size_t i = 0; i < 100000; i++) {
     printf("Iteration %ld, the error is %f                      \r", i, score);
     auto l1 = layer1;
     auto l2 = layer2;
 
-    Mutation::testMutate(&l1.m_matrix, 0.001);
-    Mutation::testMutate(&l2.m_matrix, 0.001);
+    Mutation::normalMutate(&l1.m_matrix, 0.0001);
+    Mutation::normalMutate(&l2.m_matrix, 0.0001);
 
     double newScore = fitness(l1, l2);
 

@@ -542,6 +542,19 @@ void testMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, float rate = 0.5) {
   }
 }
 
+template <typename T, size_t ROWS, size_t COLS>
+void normalMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, float stddev = 0.1) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::normal_distribution<> normal(0, stddev);
+
+  for (size_t y = 0; y < ROWS; y++) {
+    for (size_t x = 0; x < COLS; x++) {
+      matrix->operator()(x, y) += normal(gen);
+    }
+  }
+}
+
 } // namespace Mutation
 
 } // namespace NNKek

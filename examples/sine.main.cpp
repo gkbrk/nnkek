@@ -22,7 +22,7 @@ template <typename L1, typename L2> double fitness(L1 layer1, L2 layer2) {
   double error = 0;
   size_t x = 0;
 
-  for (float i = -5; i < 5; i += 0.05) {
+  for (float i = -5; i < 5; i += 0.2) {
     auto target = std::sin(i);
     auto result = getResult(layer1, layer2, i)[0];
     error += (target - result) * (target - result);
@@ -33,8 +33,8 @@ template <typename L1, typename L2> double fitness(L1 layer1, L2 layer2) {
 }
 
 int main(void) {
-  Layer::Dense<float, 1, 20> layer1;
-  Layer::Dense<float, 20, 1> layer2;
+  Layer::Dense<float, 1, 3> layer1;
+  Layer::Dense<float, 3, 1> layer2;
 
   double score = fitness(layer1, layer2);
 
@@ -43,8 +43,8 @@ int main(void) {
     auto l1 = layer1;
     auto l2 = layer2;
 
-    Mutation::testMutate(&l1.m_matrix, 0.05);
-    Mutation::testMutate(&l2.m_matrix, 0.05);
+    Mutation::testMutate(&l1.m_matrix, 0.1);
+    Mutation::testMutate(&l2.m_matrix, 0.1);
 
     double newScore = fitness(l1, l2);
 
