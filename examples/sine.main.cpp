@@ -38,13 +38,13 @@ int main(void) {
 
   double score = fitness(layer1, layer2);
 
-  for (size_t i = 0; i < 50000; i++) {
+  for (size_t i = 0; score > 0.01; i++) {
     // printf("Iteration %ld, the error is %f\n", i, score);
     auto l1 = layer1;
     auto l2 = layer2;
 
-    Mutation::testMutate(&l1.m_matrix, 0.1);
-    Mutation::testMutate(&l2.m_matrix, 0.1);
+    Mutation::normalMutate(&l1.m_matrix, 0.001);
+    Mutation::normalMutate(&l2.m_matrix, 0.001);
 
     double newScore = fitness(l1, l2);
 

@@ -74,6 +74,48 @@ template <typename T> void shuffle(T &container, size_t length) {
 
 namespace Container {
 
+template <typename T> class Option {
+public:
+  Option(T val) {
+    m_has_value = true;
+    m_val = val;
+  }
+
+  Option() { m_has_value = false; }
+
+  T or_default(T val) {
+    if (m_has_value) {
+      return m_val;
+    } else {
+      return val;
+    }
+  }
+
+  T value() {
+    ASSERT(m_has_value);
+    return m_val;
+  }
+
+  bool is_some() { return m_has_value; }
+
+private:
+  bool m_has_value;
+  T m_val;
+};
+
+template <typename T, typename L> class Pair {
+public:
+  Pair(T left, L right) : m_left{left}, m_right{right} {}
+
+  T first() { return m_left; }
+
+  L second() { return m_right; }
+
+private:
+  T m_left;
+  L m_right;
+};
+
 class String {
 public:
   explicit String(const char *str, size_t size) {
@@ -104,6 +146,8 @@ public:
   char operator[](size_t index) const { return m_value[index]; }
 
   size_t length() const { return m_size; }
+
+  Pair<String, String> split_at(char);
 
 private:
   char *m_value;
@@ -165,6 +209,26 @@ private:
   char *m_buffer;
   size_t m_size;
 };
+
+Pair<String, String> String::split_at(char sep) {
+  StringBuilder s1;
+  StringBuilder s2;
+
+  bool t1 = true;
+  for (size_t i = 0; i < m_size; i++) {
+    if (m_value[i] == sep && t1) {
+      t1 = false;
+      continue;
+    }
+    if (t1) {
+      s1.append(m_value[i]);
+    } else {
+      s2.append(m_value[i]);
+    }
+  }
+
+  return Pair<String, String>(s1.to_string(), s2.to_string());
+}
 
 template <typename T> class Vector {
 public:
