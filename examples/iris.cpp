@@ -13,9 +13,9 @@ template <typename L1, typename L2>
 Linalg::Vector<double, 3> getResult(L1 &layer1, L2 &layer2,
                                     Linalg::Vector<double, 4> input) {
   auto result = layer1.forward(input);
-  auto result1 = Activation::tanh(result);
+  auto result1 = Activation::relu(result);
   auto result2 = layer2.forward(result1);
-  auto result3 = Activation::tanh(result2);
+  auto result3 = Activation::relu(result2);
   return result3;
 }
 
@@ -58,18 +58,22 @@ int main(void) {
 
   Util::shuffle(samples, samples.size());
 
-  Layer::Dense<double, 4, 50> layer1;
-  Layer::Dense<double, 50, 3> layer2;
+  Layer::Dense<double, 4, 5> layer1;
+  Layer::Dense<double, 5, 3> layer2;
 
   double score = fitness(layer1, layer2);
 
-  for (size_t i = 0; i < 100000; i++) {
-    printf("Iteration %ld, the error is %f                      \r", i, score);
+  for (size_t i = 0; score > 0.1; i++) {
+    if (i % 1000 == 0) {
+      printf("Iteration %ld, the error is %f                      \r", i,
+             score);
+      fflush(stdout);
+    }
     auto l1 = layer1;
     auto l2 = layer2;
 
-    Mutation::normalMutate(&l1.m_matrix, 0.0001);
-    Mutation::normalMutate(&l2.m_matrix, 0.0001);
+    Mutation::normalMutate(&l1.m_matrix, 0.00001);
+    Mutation::normalMutate(&l2.m_matrix, 0.00001);
 
     double newScore = fitness(l1, l2);
 

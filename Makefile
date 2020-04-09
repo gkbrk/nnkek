@@ -1,7 +1,7 @@
 CXX ?= c++
 
 CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++17
-CXXFLAGS += -Ofast -flto -s
+CXXFLAGS += -Ofast -flto
 #CXXFLAGS += -O0 -ggdb
 CXXFLAGS += -I.
 
