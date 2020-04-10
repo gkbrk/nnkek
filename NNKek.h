@@ -586,6 +586,23 @@ Linalg::Vector<T, IN> fastSigmoid(const Linalg::Vector<T, IN> &vec) {
   return result;
 }
 
+template <typename T, size_t IN>
+Linalg::Vector<T, IN> softmax(const Linalg::Vector<T, IN> &vec) {
+  Linalg::Vector<T, IN> result;
+
+  T sum = 0;
+
+  for (size_t i = 0; i < IN; i++) {
+    sum += std::exp(vec[i]);
+  }
+
+  for (size_t i = 0; i < IN; i++) {
+    result[i] = std::exp(vec[i]) / sum;
+  }
+
+  return result;
+}
+
 } // namespace Activation
 
 namespace Mutation {

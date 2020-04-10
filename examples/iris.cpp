@@ -8,6 +8,7 @@ struct Sample {
 };
 
 Container::Vector<Sample> samples;
+size_t numTrain;
 
 template <typename L1, typename L2>
 Linalg::Vector<double, 3> getResult(L1 &layer1, L2 &layer2,
@@ -15,15 +16,13 @@ Linalg::Vector<double, 3> getResult(L1 &layer1, L2 &layer2,
   auto result = layer1.forward(input);
   auto result1 = Activation::relu(result);
   auto result2 = layer2.forward(result1);
-  auto result3 = Activation::relu(result2);
+  auto result3 = Activation::softmax(result2);
   return result3;
 }
 
 template <typename L1, typename L2> double fitness(L1 &layer1, L2 &layer2) {
   double error = 0;
   size_t x = 0;
-
-  auto numTrain = samples.size() / 2;
 
   for (size_t i = 0; i < numTrain; i++) {
     auto target = samples[i].output;
@@ -61,6 +60,7 @@ int main(void) {
   Layer::Dense<double, 4, 5> layer1;
   Layer::Dense<double, 5, 3> layer2;
 
+  numTrain = samples.size() * 0.8;
   double score = fitness(layer1, layer2);
 
   for (size_t i = 0; score > 0.1; i++) {
@@ -83,8 +83,6 @@ int main(void) {
       layer2 = l2;
     }
   }
-
-  auto numTrain = samples.size() / 2;
 
   size_t correct = 0;
   size_t incorrect = 0;

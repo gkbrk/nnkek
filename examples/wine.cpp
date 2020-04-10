@@ -16,7 +16,7 @@ Linalg::Vector<double, 3> getResult(L1 &layer1, L2 &layer2,
   auto result = layer1.forward(input);
   auto result1 = Activation::tanh(result);
   auto result2 = layer2.forward(result1);
-  auto result3 = Activation::tanh(result2);
+  auto result3 = Activation::softmax(result2);
   return result3;
 }
 
@@ -66,13 +66,17 @@ int main(void) {
 
   numTrain = samples.size() * 0.90;
 
-  Layer::Dense<double, 13, 20> layer1;
-  Layer::Dense<double, 20, 3> layer2;
+  Layer::Dense<double, 13, 3> layer1;
+  Layer::Dense<double, 3, 3> layer2;
 
   double score = fitness(layer1, layer2);
 
   for (size_t i = 0; score > 0.15; i++) {
-    printf("Iteration %ld, the error is %f                      \r", i, score);
+    if (i % 1000 == 0) {
+      printf("Iteration %ld, the error is %f                      \r", i,
+             score);
+      fflush(stdout);
+    }
     auto l1 = layer1;
     auto l2 = layer2;
 

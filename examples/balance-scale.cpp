@@ -16,7 +16,7 @@ Linalg::Vector<double, 3> getResult(L1 &layer1, L2 &layer2,
   auto result = layer1.forward(input);
   auto result1 = Activation::relu(result);
   auto result2 = layer2.forward(result1);
-  auto result3 = Activation::relu(result2);
+  auto result3 = Activation::softmax(result2);
   return result3;
 }
 
@@ -94,7 +94,6 @@ int main(void) {
       layer2 = l2;
     }
   }
-
 
   size_t correct = 0;
   size_t incorrect = 0;
