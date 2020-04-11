@@ -35,6 +35,9 @@
 
 namespace NNKek {
 
+std::random_device rd;
+std::mt19937 gen(rd());
+
 namespace Util {
 
 template <typename T> T map(T value, T f1, T t1, T f2, T t2) {
@@ -68,6 +71,10 @@ template <typename T> void shuffle(T &container, size_t length) {
     size_t j = rand() % (i + 1);
     swap(container[i], container[j]);
   }
+}
+
+template <typename T> T random_range(T from, T to) {
+  return map((T)gen(), (T)gen.min(), (T)gen.max(), from, to);
 }
 
 } // namespace Util
@@ -624,7 +631,7 @@ void testMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, float rate = 0.5) {
 }
 
 template <typename T, size_t ROWS, size_t COLS>
-void normalMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, float stddev = 0.1) {
+void normalMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, float stddev) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::normal_distribution<> normal(0, stddev);
@@ -633,6 +640,39 @@ void normalMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, float stddev = 0.1) {
     for (size_t x = 0; x < COLS; x++) {
       matrix->operator()(x, y) += normal(gen);
     }
+  }
+}
+
+template <typename T, size_t ROWS, size_t COLS>
+void normalMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, float rate,
+                  float stddev) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> prob(0, 1);
+  std::normal_distribution<> normal(0, stddev);
+
+  for (size_t y = 0; y < ROWS; y++) {
+    for (size_t x = 0; x < COLS; x++) {
+      if (prob(gen) < rate) {
+        matrix->operator()(x, y) += normal(gen);
+      }
+    }
+  }
+}
+
+template <typename T, typename F, size_t ROWS, size_t COLS>
+void costMutate(Linalg::Matrix<T, ROWS, COLS> *matrix, F f, T stddev) {
+  size_t y = Util::random_range((size_t)0, ROWS);
+  size_t x = Util::random_range((size_t)0, COLS);
+  std::normal_distribution<> normalDist{0, stddev};
+  T diff = normalDist(gen);
+
+  auto cost = f();
+  matrix->operator()(x, y) += diff;
+  auto costPos = f();
+
+  if (costPos > cost) {
+    matrix->operator()(x, y) -= diff;
   }
 }
 

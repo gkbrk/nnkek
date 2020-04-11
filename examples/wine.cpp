@@ -72,27 +72,17 @@ int main(void) {
   double score = fitness(layer1, layer2);
 
   for (size_t i = 0; score > 0.15; i++) {
-    if (i % 1000 == 0) {
+    if (i % 10 == 0) {
       printf("Iteration %ld, the error is %f                      \r", i,
              score);
       fflush(stdout);
     }
-    auto l1 = layer1;
-    auto l2 = layer2;
 
-    Mutation::normalMutate(&l1.m_matrix, 0.00001);
-    Mutation::normalMutate(&l2.m_matrix, 0.00001);
+    auto cost = [&layer1, &layer2]() { return fitness(layer1, layer2); };
 
-    double newScore = fitness(l1, l2);
-
-    if (newScore <= score) {
-      score = newScore;
-      layer1 = l1;
-      layer2 = l2;
-    }
-
-    if (score < 0.1)
-      break;
+    Mutation::costMutate(&layer1.m_matrix, cost, 0.001);
+    Mutation::costMutate(&layer2.m_matrix, cost, 0.001);
+    score = fitness(layer1, layer2);
   }
 
   size_t correct = 0;

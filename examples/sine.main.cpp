@@ -33,26 +33,19 @@ template <typename L1, typename L2> double fitness(L1 layer1, L2 layer2) {
 }
 
 int main(void) {
-  Layer::Dense<float, 1, 3> layer1;
-  Layer::Dense<float, 3, 1> layer2;
+  Layer::Dense<float, 1, 50> layer1;
+  Layer::Dense<float, 50, 1> layer2;
 
   double score = fitness(layer1, layer2);
 
   for (size_t i = 0; score > 0.01; i++) {
     // printf("Iteration %ld, the error is %f\n", i, score);
-    auto l1 = layer1;
-    auto l2 = layer2;
 
-    Mutation::normalMutate(&l1.m_matrix, 0.001);
-    Mutation::normalMutate(&l2.m_matrix, 0.001);
+    auto cost = [&layer1, &layer2]() { return fitness(layer1, layer2); };
 
-    double newScore = fitness(l1, l2);
-
-    if (newScore <= score) {
-      score = newScore;
-      layer1 = l1;
-      layer2 = l2;
-    }
+    Mutation::costMutate(&layer1.m_matrix, cost, 0.1f);
+    Mutation::costMutate(&layer2.m_matrix, cost, 0.1f);
+    score = fitness(layer1, layer2);
   }
 
   for (float i = -5; i < 5; i += 0.001) {
